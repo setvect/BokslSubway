@@ -83,9 +83,7 @@ class ResRealtimeArrival {
   factory ResRealtimeArrival.fromJson(Map<String, dynamic> json) {
     return ResRealtimeArrival(
       errorMessage: ErrorMessage.fromJson(json['errorMessage']),
-      realtimeArrivalList: (json['realtimeArrivalList'] as List)
-          .map((i) => RealtimeArrival.fromJson(i))
-          .toList(),
+      realtimeArrivalList: (json['realtimeArrivalList'] as List).map((i) => RealtimeArrival.fromJson(i)).toList(),
     );
   }
 }

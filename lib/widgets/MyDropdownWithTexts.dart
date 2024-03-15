@@ -10,21 +10,25 @@ class MyDropdownWithTexts extends StatefulWidget {
 }
 
 class _MyDropdownWithTextsState extends State<MyDropdownWithTexts> {
-  String dropdownValue = '';
+  String stationName = '';
   ResRealtimeArrival? resRealtimeArrival;
 
-  final List<MapEntry<String, String>> items = [
-    const MapEntry('', '-- 선택하세요 --'),
-    const MapEntry('사당', '사당'),
-    const MapEntry('광화문', '광화문'),
-    const MapEntry('용산', '용산'),
-    const MapEntry('고속터미널', '고속터미널'),
-    const MapEntry('수원', '수원'),
-  ];
+  void onButtonPressed() {
+    setState(() {
+      if (stationName.isEmpty) {
+        showWarningDialog(context);
+        return;
+      }
+      print('dropdownValue: $stationName');
+      fetchData();
+    });
+  }
+
+  final FocusNode _focusNode = FocusNode();
 
   Future<ResRealtimeArrival?> fetchDataFromApi(int start, int end) async {
-    final response = await http.get(Uri.parse(
-        'http://swopenapi.seoul.go.kr/api/subway/sample/json/realtimeStationArrival/$start/$end/$dropdownValue'));
+    final response =
+        await http.get(Uri.parse('http://swopenapi.seoul.go.kr/api/subway/sample/json/realtimeStationArrival/$start/$end/$stationName'));
     if (response.statusCode == 200) {
       return ResRealtimeArrival.fromJson(jsonDecode(response.body));
     } else {
@@ -42,11 +46,9 @@ class _MyDropdownWithTextsState extends State<MyDropdownWithTexts> {
       if (total > 5) {
         int start = 6;
         while (start <= total) {
-          ResRealtimeArrival? additionalResRealtimeArrival =
-              await fetchDataFromApi(start, start + 4);
+          ResRealtimeArrival? additionalResRealtimeArrival = await fetchDataFromApi(start, start + 4);
           if (additionalResRealtimeArrival != null) {
-            tempResRealtimeArrival.realtimeArrivalList
-                .addAll(additionalResRealtimeArrival.realtimeArrivalList);
+            tempResRealtimeArrival.realtimeArrivalList.addAll(additionalResRealtimeArrival.realtimeArrivalList);
           }
           start += 5;
         }
@@ -112,42 +114,29 @@ class _MyDropdownWithTextsState extends State<MyDropdownWithTexts> {
             Expanded(
               child: SizedBox(
                 width: MediaQuery.of(context).size.width, // 화면의 넓이로 설정
-                child: DropdownButton<String>(
-                  value: dropdownValue,
-                  icon: const Icon(Icons.arrow_downward),
-                  iconSize: 24,
-                  elevation: 16,
-                  style: const TextStyle(color: Colors.deepPurple),
-                  underline: Container(
-                    height: 2,
-                    color: Colors.deepPurpleAccent,
-                  ),
+                child: TextField(
+                  focusNode: _focusNode,
                   onChanged: (String? newValue) {
                     setState(() {
-                      dropdownValue = newValue!;
+                      stationName = newValue!;
                     });
                   },
-                  items: items.map<DropdownMenuItem<String>>(
-                      (MapEntry<String, String> item) {
-                    return DropdownMenuItem<String>(
-                      value: item.key,
-                      child: Text(item.value),
-                    );
-                  }).toList(),
+                  onSubmitted: (String? value) {
+                    setState(() {
+                      stationName = value!;
+                      onButtonPressed();
+                      _focusNode.requestFocus();
+                    });
+                  },
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: '값을 입력하세요',
+                  ),
                 ),
               ),
             ),
             ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  if (dropdownValue.isEmpty) {
-                    showWarningDialog(context);
-                    return;
-                  }
-                  print('dropdownValue: $dropdownValue');
-                  fetchData();
-                });
-              },
+              onPressed: onButtonPressed,
               child: const Text('확인'),
             ),
           ],
@@ -158,10 +147,8 @@ class _MyDropdownWithTextsState extends State<MyDropdownWithTexts> {
                   itemCount: arrival.realtimeArrivalList.length,
                   itemBuilder: (context, index) {
                     return ListTile(
-                      title: Text(
-                          '${arrival.realtimeArrivalList[index].subwayId}  ${arrival.realtimeArrivalList[index].trainLineNm}'),
-                      subtitle: Text(
-                          '${arrival.realtimeArrivalList[index].arvlMsg2}  ${arrival.realtimeArrivalList[index].arvlMsg3}'),
+                      title: Text('${arrival.realtimeArrivalList[index].subwayId}  ${arrival.realtimeArrivalList[index].trainLineNm}'),
+                      subtitle: Text('${arrival.realtimeArrivalList[index].arvlMsg2}  ${arrival.realtimeArrivalList[index].arvlMsg3}'),
                     );
                   },
                 )
