@@ -28,19 +28,19 @@ class _BokslSubwayMainState extends State<BokslSubwayMain> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 IconButton(
-                  icon: Icon(Icons.home),
-                  onPressed: () {
-                    // Handle your logic here
-                  },
-                ),
-                IconButton(
                   icon: Icon(Icons.search),
                   onPressed: () {
                     // Handle your logic here
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.person),
+                  icon: Icon(Icons.star),
+                  onPressed: () {
+                    // Handle your logic here
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.help),
                   onPressed: () {
                     // Handle your logic here
                   },

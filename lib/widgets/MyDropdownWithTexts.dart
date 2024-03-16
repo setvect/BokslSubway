@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:boksl_subway/constant.dart';
+import 'package:boksl_subway/helper/helper.dart';
 import 'package:boksl_subway/models/ResRealtimeArrival.dart';
 import 'package:boksl_subway/models/Station.dart';
+import 'package:boksl_subway/util/util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 class MyDropdownWithTexts extends StatefulWidget {
@@ -14,16 +16,25 @@ class MyDropdownWithTexts extends StatefulWidget {
 class _MyDropdownWithTextsState extends State<MyDropdownWithTexts> {
   String stationName = '';
   ResRealtimeArrival? resRealtimeArrival;
+  List<Station> stationList = [];
+  List<Station> filteredStationList = [];
+
+  Color hexToColor(String code) {
+    return Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
+  }
 
   @override
   void initState() {
     super.initState();
-
-    readStationList().then((List<Station> stationList) {
-      print('stationList: ${stationList.length}');
+    Helper.readStationList().then((list) {
+      setState(() {
+        this.stationList = list;
+        this.filteredStationList = List.from(list);
+      });
     });
   }
 
+  // 역정보 읽어 오기
   void onButtonPressed() {
     setState(() {
       if (stationName.isEmpty) {
@@ -48,13 +59,6 @@ class _MyDropdownWithTextsState extends State<MyDropdownWithTexts> {
       }
     }
     return null;
-  }
-
-  // 역정보 읽어 오기
-  Future<List<Station>> readStationList() async {
-    final String response = await rootBundle.loadString('stationList.json');
-    final data = await json.decode(response) as List;
-    return data.map((json) => Station.fromJson(json)).toList();
   }
 
   void fetchData() async {
@@ -123,7 +127,7 @@ class _MyDropdownWithTextsState extends State<MyDropdownWithTexts> {
 
   @override
   Widget build(BuildContext context) {
-    final arrival = resRealtimeArrival;
+    final realtimeArrivalList = resRealtimeArrival?.realtimeArrivalList;
 
     return Column(
       children: <Widget>[
@@ -137,6 +141,11 @@ class _MyDropdownWithTextsState extends State<MyDropdownWithTexts> {
                   onChanged: (String? newValue) {
                     setState(() {
                       stationName = newValue!;
+                      filteredStationList = stationList.where((station) {
+                        var contains = station.stationNm.contains(stationName);
+                        var chosung = getChosung(station.stationNm).contains(getChosung(stationName));
+                        return contains || chosung;
+                      }).toList();
                     });
                   },
                   onSubmitted: (String? value) {
@@ -148,7 +157,7 @@ class _MyDropdownWithTextsState extends State<MyDropdownWithTexts> {
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: '값을 입력하세요',
+                    labelText: '역 이름을 입력하세요.',
                   ),
                 ),
               ),
@@ -156,13 +165,22 @@ class _MyDropdownWithTextsState extends State<MyDropdownWithTexts> {
           ],
         ),
         Expanded(
-          child: arrival != null
+          child: filteredStationList.isNotEmpty
               ? ListView.builder(
-                  itemCount: arrival.realtimeArrivalList.length,
+                  itemCount: filteredStationList.length,
                   itemBuilder: (context, index) {
                     return ListTile(
-                      title: Text('${arrival.realtimeArrivalList[index].subwayId}  ${arrival.realtimeArrivalList[index].trainLineNm}'),
-                      subtitle: Text('${arrival.realtimeArrivalList[index].arvlMsg2}  ${arrival.realtimeArrivalList[index].arvlMsg3}'),
+                      title: Text(filteredStationList[index].stationNm),
+                      subtitle: Text(filteredStationList[index].lineNum,
+                          style: TextStyle(
+                            color: hexToColor(BokslSubwayConstant.lineColors[filteredStationList[index].lineNum]!),
+                          )),
+                      onTap: () {
+                        setState(() {
+                          stationName = filteredStationList[index].stationNm;
+                          onButtonPressed();
+                        });
+                      },
                     );
                   },
                 )

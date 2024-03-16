@@ -1,8 +1,8 @@
 class Station {
-  final String stationCd;
-  final String stationNm;
-  final String lineNum;
-  final String frCode;
+  final String stationCd; // 역코드
+  final String stationNm; // 역명
+  final String lineNum; // 호선
+  final String frCode; // 외부코드
 
   Station({required this.stationCd, required this.stationNm, required this.lineNum, required this.frCode});
 
