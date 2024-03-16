@@ -6,3 +6,6 @@ GET http://swopenapi.seoul.go.kr/api/subway/sample/json/realtimeStationArrival/1
 
 ### 실시간 지하철 도착 정보
 GET http://swopenapi.seoul.go.kr/api/subway/{{apk_key}}/json/realtimeStationArrival/0/10/서울
+
+### 전철 목록 받아 오기
+GET http://openAPI.seoul.go.kr:8088/{{apk_key}}/json/SearchInfoBySubwayNameService/1/1000

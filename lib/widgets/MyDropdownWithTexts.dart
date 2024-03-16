@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:boksl_subway/models/ResRealtimeArrival.dart';
+import 'package:boksl_subway/models/Station.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 class MyDropdownWithTexts extends StatefulWidget {
@@ -12,6 +14,15 @@ class MyDropdownWithTexts extends StatefulWidget {
 class _MyDropdownWithTextsState extends State<MyDropdownWithTexts> {
   String stationName = '';
   ResRealtimeArrival? resRealtimeArrival;
+
+  @override
+  void initState() {
+    super.initState();
+
+    readStationList().then((List<Station> stationList) {
+      print('stationList: ${stationList.length}');
+    });
+  }
 
   void onButtonPressed() {
     setState(() {
@@ -37,6 +48,13 @@ class _MyDropdownWithTextsState extends State<MyDropdownWithTexts> {
       }
     }
     return null;
+  }
+
+  // 역정보 읽어 오기
+  Future<List<Station>> readStationList() async {
+    final String response = await rootBundle.loadString('stationList.json');
+    final data = await json.decode(response) as List;
+    return data.map((json) => Station.fromJson(json)).toList();
   }
 
   void fetchData() async {
@@ -134,10 +152,6 @@ class _MyDropdownWithTextsState extends State<MyDropdownWithTexts> {
                   ),
                 ),
               ),
-            ),
-            ElevatedButton(
-              onPressed: onButtonPressed,
-              child: const Text('확인'),
             ),
           ],
         ),
