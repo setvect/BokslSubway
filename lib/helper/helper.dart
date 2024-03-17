@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:boksl_subway/models/Station.dart';
+import 'package:boksl_subway/models/station.dart';
 import 'package:flutter/services.dart';
 
 class Helper {
