@@ -16,9 +16,12 @@
 ```
 
 ### 2.3. 빌드 방법 
-
+#### 2.3.1. 안드로이드
 ```shell
+$ flutter build apk
 ```
+
+생성된 apk 경로: build/app/outputs/flutter-apk/app-release.apk
 
 앱 아이콘 이미지를 변경하는 경우
 ```shell
