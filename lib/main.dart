@@ -2,8 +2,14 @@ import 'package:boksl_subway/widgets/Favorites.dart';
 import 'package:boksl_subway/widgets/Help.dart';
 import 'package:boksl_subway/widgets/StationSearch.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 
 void main() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    print('${record.level.name}: ${record.time}: ${record.message}');
+  });
+
   runApp(MaterialApp(
     home: BokslSubwayMain(),
     themeMode: ThemeMode.dark,

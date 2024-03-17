@@ -11,7 +11,7 @@ dependencies:
   http: ^0.13.3
   flutter:
     sdk: flutter
-
+  logging: ^1.0.1
   cupertino_icons: ^1.0.6
 
 dev_dependencies:

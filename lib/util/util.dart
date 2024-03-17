@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 String getChosung(String input) {
   String result = '';
   for (int i = 0; i < input.length; i++) {
@@ -10,4 +12,8 @@ String getChosung(String input) {
     }
   }
   return result;
+}
+
+Color hexToColor(String code) {
+  return Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
 }

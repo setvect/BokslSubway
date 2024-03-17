@@ -15,10 +15,6 @@ class _StationSearchState extends State<StationSearch> {
   List<Station> stationList = [];
   List<Station> filteredStationList = [];
 
-  Color hexToColor(String code) {
-    return Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
-  }
-
   @override
   void initState() {
     super.initState();

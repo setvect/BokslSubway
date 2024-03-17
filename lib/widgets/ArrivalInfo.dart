@@ -1,9 +1,12 @@
 import 'dart:convert';
 
+import 'package:boksl_subway/constant.dart';
 import 'package:boksl_subway/models/res_realtime_arrival.dart';
 import 'package:boksl_subway/models/station.dart';
+import 'package:boksl_subway/util/util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:logging/logging.dart';
 
 class ArrivalInfo extends StatefulWidget {
   final Station station;
@@ -16,6 +19,7 @@ class ArrivalInfo extends StatefulWidget {
 
 class _ArrivalInfoState extends State<ArrivalInfo> {
   ResRealtimeArrival? resRealtimeArrival;
+  final _logger = Logger('_ArrivalInfoState');
 
   @override
   void initState() {
@@ -30,24 +34,42 @@ class _ArrivalInfoState extends State<ArrivalInfo> {
         title: Text(widget.station.stationNm),
       ),
       body: Center(
-        child: ListView.builder(
-          itemCount: resRealtimeArrival?.realtimeArrivalList.length ?? 0,
-          itemBuilder: (BuildContext context, int index) {
-            return Card(
-              child: ListTile(
-                title: Text(resRealtimeArrival?.realtimeArrivalList[index].trainLineNm ?? ''),
-                subtitle: Text(resRealtimeArrival?.realtimeArrivalList[index].arvlMsg2 ?? ''),
+          child: ListView.builder(
+        itemCount: resRealtimeArrival?.realtimeArrivalList.length ?? 0,
+        itemBuilder: (BuildContext context, int index) {
+          return Card(
+            child: ListTile(
+              title: Text(resRealtimeArrival?.realtimeArrivalList[index].trainLineNm ?? ''),
+              subtitle: RichText(
+                text: TextSpan(
+                  children: <InlineSpan>[
+                    TextSpan(
+                      text: (resRealtimeArrival?.realtimeArrivalList[index].arvlMsg2 ?? ''),
+                      style: DefaultTextStyle.of(context).style,
+                    ),
+                    WidgetSpan(
+                      child: SizedBox(width: 10),
+                    ),
+                    TextSpan(
+                      text: resRealtimeArrival!.realtimeArrivalList[index].getSubwayName(),
+                      style: DefaultTextStyle.of(context)
+                          .style
+                          .copyWith(color: hexToColor(BokslSubwayConstant.lineColors[widget.station.lineNum]!)),
+                    ),
+                  ],
+                ),
               ),
-            );
-          },
-        )
-      ),
+            ),
+          );
+        },
+      )),
     );
   }
 
   Future<ResRealtimeArrival?> fetchArrivalTime(int start, int end) async {
-    final response =
-    await http.get(Uri.parse('http://swopenapi.seoul.go.kr/api/subway/sample/json/realtimeStationArrival/$start/$end/${widget.station.stationNm}'));
+    var uri = 'http://swopenapi.seoul.go.kr/api/subway/sample/json/realtimeStationArrival/$start/$end/${widget.station.stationNm}';
+    _logger.info('uri: $uri');
+    final response = await http.get(Uri.parse(uri));
     if (response.statusCode == 200) {
       return ResRealtimeArrival.fromJson(jsonDecode(response.body));
     } else {
@@ -73,12 +95,16 @@ class _ArrivalInfoState extends State<ArrivalInfo> {
         }
       }
       setState(() {
+        var choiceTimeInfo =
+            tempResRealtimeArrival.realtimeArrivalList.where((element) => element.getSubwayName() == widget.station.lineNum).toList();
+        tempResRealtimeArrival.realtimeArrivalList.clear();
+        tempResRealtimeArrival.realtimeArrivalList.addAll(choiceTimeInfo);
+
         resRealtimeArrival = tempResRealtimeArrival;
         resRealtimeArrival?.realtimeArrivalList.sort((a, b) {
           return a.subwayId.compareTo(b.subwayId);
         });
       });
-      print('Parsed data: ${resRealtimeArrival?.realtimeArrivalList.length}');
     }
   }
 
