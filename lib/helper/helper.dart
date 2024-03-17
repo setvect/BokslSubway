@@ -11,6 +11,7 @@ class Helper {
     var stationList = data.map((json) => Station.fromJson(json)).toList();
 
     List<Station> sortedStationList = List<Station>.from(stationList).where((_element) {
+      // 실시간 도착정보가 지원되지 않는 노선은 제외
       Set<String> linesToCheck = ["인천", "용인경전철", "의정부경전철", "김포도시철도", "신림선"].toSet();
       return !linesToCheck.any((line) => _element.lineNum.startsWith(line));
     }).toList();

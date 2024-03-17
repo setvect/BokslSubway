@@ -20,6 +20,11 @@
 ```shell
 ```
 
+앱 아이콘 이미지를 변경하는 경우
+```shell
+$ flutter pub run flutter_launcher_icons:main
+```
+
 ## 3. 실행 화면
 
 
