@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 
 class Helper {
   static Future<List<Station>> readStationList() async {
-    final String response = await rootBundle.loadString('stationList.json');
+    final String response = await rootBundle.loadString('assets/stationList.json');
     final data = await json.decode(response) as List;
 
     var stationList = data.map((json) => Station.fromJson(json)).toList();
@@ -23,5 +23,4 @@ class Helper {
 
     return sortedStationList;
   }
-
 }
