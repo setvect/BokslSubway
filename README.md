@@ -23,7 +23,7 @@ $ flutter build apk
 
 생성된 apk 경로: build/app/outputs/flutter-apk/app-release.apk
 
-앱 아이콘 이미지를 변경하는 경우
+앱 아이콘 이미지를 변경하는 경우`/assets/boksl_subway.png` 파일을 변경한 후 다음 명령어 실행
 ```shell
 $ flutter pub run flutter_launcher_icons:main
 ```
