@@ -54,7 +54,7 @@ class _BokslSubwayMainState extends State<BokslSubwayMain> {
               IconButton(
                 icon: Icon(
                   Icons.search,
-                  color: _currentWidget == _stationSearch ? Colors.blue : Colors.grey,
+                  color: _currentWidget == _stationSearch ? Colors.yellow : Colors.grey,
                 ),
                 onPressed: () {
                   setState(() {
@@ -63,7 +63,7 @@ class _BokslSubwayMainState extends State<BokslSubwayMain> {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.star, color: _currentWidget == _favorites ? Colors.blue : Colors.grey),
+                icon: Icon(Icons.star, color: _currentWidget == _favorites ? Colors.yellow : Colors.grey),
                 onPressed: () {
                   setState(() {
                     _currentWidget = _favorites;
@@ -71,7 +71,7 @@ class _BokslSubwayMainState extends State<BokslSubwayMain> {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.help, color: _currentWidget == _help ? Colors.blue : Colors.grey),
+                icon: Icon(Icons.help, color: _currentWidget == _help ? Colors.yellow : Colors.grey),
                 onPressed: () {
                   setState(() {
                     _currentWidget = _help;

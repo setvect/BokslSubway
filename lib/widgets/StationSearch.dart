@@ -110,7 +110,10 @@ class _StationSearchState extends State<StationSearch> {
                     );
                   },
                   trailing: IconButton(
-                    icon: Icon(isFavorite ? Icons.star : Icons.star_border),
+                    icon: Icon(
+                      isFavorite ? Icons.star : Icons.star_border,
+                      color: isFavorite ? Colors.yellow : null,
+                    ),
                     onPressed: () async {
                       String key = "${station.stationNm}_${station.lineNum}";
                       if (isFavorite) {
