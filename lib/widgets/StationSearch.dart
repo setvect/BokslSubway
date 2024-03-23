@@ -17,6 +17,7 @@ class _StationSearchState extends State<StationSearch> {
   String stationName = '';
   List<Station> stationList = [];
   List<Station> filteredStationList = [];
+  Map<String, bool> favoriteStatus = {};
 
   @override
   void initState() {
@@ -26,6 +27,19 @@ class _StationSearchState extends State<StationSearch> {
         this.stationList = list;
         this.filteredStationList = List.from(list);
       });
+    });
+    _loadFavorites();
+  }
+
+  void _loadFavorites() async {
+    var favorites = await FavoriteStationService.list();
+    Map<String, bool> localFavorites = {};
+    for (var station in favorites) {
+      String key = "${station.stationNm}_${station.lineNum}";
+      localFavorites[key] = true;
+    }
+    setState(() {
+      favoriteStatus = localFavorites;
     });
   }
 
@@ -74,53 +88,47 @@ class _StationSearchState extends State<StationSearch> {
               if (filteredStationList.isEmpty) {
                 return Container();
               } else {
+                var station = filteredStationList[index];
+                // 즐겨찾기 상태 확인
+                bool isFavorite = favoriteStatus["${station.stationNm}_${station.lineNum}"] ?? false;
+
                 return ListTile(
-                  title: Text(filteredStationList[index].stationNm),
-                  subtitle: Text(filteredStationList[index].lineNum,
-                      style: TextStyle(
-                        color: hexToColor(BokslSubwayConstant.lineColors[filteredStationList[index].lineNum]!),
-                      )),
+                  title: Text(station.stationNm),
+                  subtitle: Text(
+                    station.lineNum,
+                    style: TextStyle(
+                      color: hexToColor(BokslSubwayConstant.lineColors[station.lineNum]!),
+                    ),
+                  ),
                   onTap: () {
                     setState(() {
-                      stationName = filteredStationList[index].stationNm;
+                      stationName = station.stationNm;
                     });
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ArrivalInfo(station: filteredStationList[index])),
+                      MaterialPageRoute(builder: (context) => ArrivalInfo(station: station)),
                     );
                   },
-                  trailing: FutureBuilder<List<Station>>(
-                    future: FavoriteStationService.list(),
-                    builder: (BuildContext context, AsyncSnapshot<List<Station>> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator(); // 로딩 중일 때는 로딩 인디케이터를 표시
-                      } else if (snapshot.hasError) {
-                        return Icon(Icons.error);
+                  trailing: IconButton(
+                    icon: Icon(isFavorite ? Icons.star : Icons.star_border),
+                    onPressed: () async {
+                      String key = "${station.stationNm}_${station.lineNum}";
+                      if (isFavorite) {
+                        await FavoriteStationService.remove(station);
                       } else {
-                        bool isFavorite = snapshot.data!.any((station) {
-                          return station.stationNm == filteredStationList[index].stationNm &&
-                              station.lineNum == filteredStationList[index].lineNum;
-                        });
-
-                        Icon icon = isFavorite ? Icon(Icons.star) : Icon(Icons.star_border);
-                        Function onPressed = isFavorite
-                            ? () => FavoriteStationService.remove(filteredStationList[index])
-                            : () => FavoriteStationService.save(filteredStationList[index]);
-
-                        return IconButton(
-                          icon: icon,
-                          onPressed: () {
-                            onPressed();
-                            setState(() {});
-                          },
-                        );
+                        await FavoriteStationService.save(station);
                       }
+                      // 즐겨찾기 상태 업데이트
+                      setState(() {
+                        favoriteStatus[key] = !isFavorite;
+                      });
                     },
                   ),
                 );
               }
             },
-          ),
+          )
+          ,
         ),
       ],
     );
