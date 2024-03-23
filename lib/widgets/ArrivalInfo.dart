@@ -33,36 +33,40 @@ class _ArrivalInfoState extends State<ArrivalInfo> {
       appBar: AppBar(
         title: Text(widget.station.stationNm),
       ),
-      body: Center(
+      body: RefreshIndicator(
+        onRefresh: getArrivalTime,
+        child: Center(
           child: ListView.builder(
-        itemCount: resRealtimeArrival?.realtimeArrivalList.length ?? 0,
-        itemBuilder: (BuildContext context, int index) {
-          return Card(
-            child: ListTile(
-              title: Text(resRealtimeArrival?.realtimeArrivalList[index].trainLineNm ?? ''),
-              subtitle: RichText(
-                text: TextSpan(
-                  children: <InlineSpan>[
-                    TextSpan(
-                      text: (resRealtimeArrival?.realtimeArrivalList[index].arvlMsg2 ?? ''),
-                      style: DefaultTextStyle.of(context).style,
+            itemCount: resRealtimeArrival?.realtimeArrivalList.length ?? 0,
+            itemBuilder: (BuildContext context, int index) {
+              return Card(
+                child: ListTile(
+                  title: Text(resRealtimeArrival?.realtimeArrivalList[index].trainLineNm ?? ''),
+                  subtitle: RichText(
+                    text: TextSpan(
+                      children: <InlineSpan>[
+                        TextSpan(
+                          text: (resRealtimeArrival?.realtimeArrivalList[index].arvlMsg2 ?? ''),
+                          style: DefaultTextStyle.of(context).style,
+                        ),
+                        WidgetSpan(
+                          child: SizedBox(width: 10),
+                        ),
+                        TextSpan(
+                          text: resRealtimeArrival!.realtimeArrivalList[index].getSubwayName(),
+                          style: DefaultTextStyle.of(context)
+                              .style
+                              .copyWith(color: hexToColor(BokslSubwayConstant.lineColors[widget.station.lineNum]!)),
+                        ),
+                      ],
                     ),
-                    WidgetSpan(
-                      child: SizedBox(width: 10),
-                    ),
-                    TextSpan(
-                      text: resRealtimeArrival!.realtimeArrivalList[index].getSubwayName(),
-                      style: DefaultTextStyle.of(context)
-                          .style
-                          .copyWith(color: hexToColor(BokslSubwayConstant.lineColors[widget.station.lineNum]!)),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          );
-        },
-      )),
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 
@@ -80,7 +84,7 @@ class _ArrivalInfoState extends State<ArrivalInfo> {
     return null;
   }
 
-  void getArrivalTime() async {
+  Future<void> getArrivalTime() async {
     ResRealtimeArrival? tempResRealtimeArrival = await fetchArrivalTime(1, 5);
     if (tempResRealtimeArrival != null) {
       int total = tempResRealtimeArrival.errorMessage.total;
@@ -96,7 +100,7 @@ class _ArrivalInfoState extends State<ArrivalInfo> {
       }
       setState(() {
         var choiceTimeInfo =
-            tempResRealtimeArrival.realtimeArrivalList.where((element) => element.getSubwayName() == widget.station.lineNum).toList();
+        tempResRealtimeArrival.realtimeArrivalList.where((element) => element.getSubwayName() == widget.station.lineNum).toList();
         tempResRealtimeArrival.realtimeArrivalList.clear();
         tempResRealtimeArrival.realtimeArrivalList.addAll(choiceTimeInfo);
 
