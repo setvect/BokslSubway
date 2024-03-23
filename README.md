@@ -38,11 +38,11 @@ $ flutter pub run flutter_launcher_icons:main
 
 ## 3. 실행 화면
 
-[!](/doc/pic_1.jpg)
+![pic_1.jpg](doc/pic_1.jpg)
 
-[!](/doc/pic_2.jpg)
+![pic_2.jpg](doc/pic_2.jpg)
 
-[!](/doc/pic_3.jpg)
+![pic_3.jpg](doc/pic_3.jpg)
 
 ## 4. 관련 정보
 
