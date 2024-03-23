@@ -1,9 +1,12 @@
 import 'package:boksl_subway/constant.dart';
 import 'package:boksl_subway/helper/helper.dart';
 import 'package:boksl_subway/models/station.dart';
+import 'package:boksl_subway/services/favorite_station.dart';
 import 'package:boksl_subway/util/util.dart';
 import 'package:boksl_subway/widgets/ArrivalInfo.dart';
 import 'package:flutter/material.dart';
+
+const String favoriteStationList = "favoriteStationList";
 
 class StationSearch extends StatefulWidget {
   @override
@@ -30,7 +33,6 @@ class _StationSearchState extends State<StationSearch> {
 
   @override
   Widget build(BuildContext context) {
-
     return Column(
       children: <Widget>[
         Row(
@@ -87,6 +89,34 @@ class _StationSearchState extends State<StationSearch> {
                       MaterialPageRoute(builder: (context) => ArrivalInfo(station: filteredStationList[index])),
                     );
                   },
+                  trailing: FutureBuilder<List<Station>>(
+                    future: FavoriteStationService.list(),
+                    builder: (BuildContext context, AsyncSnapshot<List<Station>> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator(); // 로딩 중일 때는 로딩 인디케이터를 표시
+                      } else if (snapshot.hasError) {
+                        return Icon(Icons.error);
+                      } else {
+                        bool isFavorite = snapshot.data!.any((station) {
+                          return station.stationNm == filteredStationList[index].stationNm &&
+                              station.lineNum == filteredStationList[index].lineNum;
+                        });
+
+                        Icon icon = isFavorite ? Icon(Icons.star) : Icon(Icons.star_border);
+                        Function onPressed = isFavorite
+                            ? () => FavoriteStationService.remove(filteredStationList[index])
+                            : () => FavoriteStationService.save(filteredStationList[index]);
+
+                        return IconButton(
+                          icon: icon,
+                          onPressed: () {
+                            onPressed();
+                            setState(() {});
+                          },
+                        );
+                      }
+                    },
+                  ),
                 );
               }
             },

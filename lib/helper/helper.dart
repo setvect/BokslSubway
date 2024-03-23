@@ -16,12 +16,16 @@ class Helper {
       return !linesToCheck.any((line) => _element.lineNum.startsWith(line));
     }).toList();
 
+    sortStationList(sortedStationList);
+
+    return sortedStationList;
+  }
+
+  static void sortStationList(List<Station> sortedStationList) {
     sortedStationList.sort((a, b) {
       int compare = a.stationNm.compareTo(b.stationNm);
       if (compare != 0) return compare;
       return a.lineNum.compareTo(b.lineNum);
     });
-
-    return sortedStationList;
   }
 }

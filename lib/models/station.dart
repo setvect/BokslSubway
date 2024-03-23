@@ -14,4 +14,13 @@ class Station {
       frCode: json['FR_CODE'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'STATION_CD': stationCd,
+      'STATION_NM': stationNm,
+      'LINE_NUM': lineNum,
+      'FR_CODE': frCode,
+    };
+  }
 }
