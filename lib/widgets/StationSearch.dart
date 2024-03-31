@@ -60,9 +60,9 @@ class _StationSearchState extends State<StationSearch> {
                     setState(() {
                       stationName = newValue!;
                       filteredStationList = stationList.where((station) {
-                        var contains = station.stationNm.contains(stationName);
-                        var chosung = getChosung(station.stationNm).contains(getChosung(stationName));
-                        return contains || chosung;
+                        var prefixMatch = station.stationNm.startsWith(stationName);
+                        var prefixChosungMatch = getChosung(station.stationNm).startsWith(stationName);
+                        return prefixMatch || prefixChosungMatch;
                       }).toList();
                     });
                   },
