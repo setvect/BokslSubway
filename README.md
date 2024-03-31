@@ -28,8 +28,17 @@ $ flutter run
 ```shell
 $ flutter build apk
 ```
-
 생성된 apk 경로: build/app/outputs/flutter-apk/app-release.apk
+
+#### 2.3.2. iOS
+
+맥 환경에서만 가능
+
+```shell
+$ flutter build ios
+```
+
+#### 2.3.3. 앱 아이콘 변경
 
 앱 아이콘 이미지를 변경하는 경우`/assets/boksl_subway.png` 파일을 변경한 후 다음 명령어 실행
 ```shell
